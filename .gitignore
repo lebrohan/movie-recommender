@@ -649,3 +649,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+imdb_data/
