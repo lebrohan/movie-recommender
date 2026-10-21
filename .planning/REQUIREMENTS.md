@@ -97,12 +97,48 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| HYG-01 | Phase 1 | Pending |
+| HYG-02 | Phase 1 | Pending |
+| HYG-03 | Phase 1 | Pending |
+| HYG-04 | Phase 1 | Pending |
+| HYG-05 | Phase 1 | Pending |
+| OPS-02 | Phase 1 | Pending |
+| TEST-02 | Phase 1 | Pending |
+| PERF-04 | Phase 1 | Pending |
+| LBX-01 | Phase 2 | Pending |
+| LBX-02 | Phase 2 | Pending |
+| LBX-03 | Phase 2 | Pending |
+| LBX-04 | Phase 2 | Pending |
+| PERF-02 | Phase 2 | Pending |
+| REC-01 | Phase 3 | Pending |
+| REC-02 | Phase 3 | Pending |
+| REC-03 | Phase 3 | Pending |
+| REC-04 | Phase 3 | Pending |
+| REC-05 | Phase 3 | Pending |
+| REC-06 | Phase 3 | Pending |
+| REC-07 | Phase 3 | Pending |
+| PERF-01 | Phase 3 | Pending |
+| PERF-03 | Phase 3 | Pending |
+| TEST-01 | Phase 3 | Pending |
+| API-01 | Phase 4 | Pending |
+| API-02 | Phase 4 | Pending |
+| API-03 | Phase 4 | Pending |
+| WEB-01 | Phase 4 | Pending |
+| WEB-02 | Phase 4 | Pending |
+| WEB-03 | Phase 4 | Pending |
+| WEB-04 | Phase 4 | Pending |
+| WEB-05 | Phase 4 | Pending |
+| FLOW-01 | Phase 5 | Pending |
+| FLOW-02 | Phase 5 | Pending |
+| FLOW-03 | Phase 5 | Pending |
+| FLOW-04 | Phase 5 | Pending |
+| OPS-01 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 36 total
-- Mapped to phases: 0
-- Unmapped: 36 ⚠️
+- Mapped to phases: 36
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-20*
-*Last updated: 2026-10-20 after initial definition*
+*Last updated: 2026-10-20 after roadmap creation*
