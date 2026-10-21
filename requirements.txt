@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+lxml
+pandas
+openpyxl
+sqlalchemy
+psycopg2-binary
+ollama
+tqdm
