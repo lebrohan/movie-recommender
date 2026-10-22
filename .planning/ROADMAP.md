@@ -21,6 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Safe & Portable Foundation
+
 **Goal**: A developer can clone the repo, configure it through environment variables, and run every pipeline stage from any directory with no credentials or personal data in git, CI protecting the code, and a faster IMDb load and embed
 **Mode:** mvp
 **Depends on**: Nothing (first phase)
@@ -31,9 +32,18 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `pip install -r requirements.txt` in a fresh virtualenv reproduces a working environment from pinned versions, and `diagnostic.py` no longer exists
   4. Each `python -m backend.<stage>` runs from any working directory, and importing `backend` leaves `sys.stdout`/`sys.stderr` untouched
   5. Pushing a commit triggers CI that runs the test suite and reports pass/fail, and re-loading IMDb data then re-embedding finishes noticeably faster (chunked load, vectorized blob build, concurrent embedding batches) without re-embedding films whose text did not change
-**Plans**: TBD
+
+**Plans**: 0/7 plans executed
+- [ ] 01-01-PLAN.md
+- [ ] 01-02-PLAN.md
+- [ ] 01-03-PLAN.md
+- [ ] 01-04-PLAN.md
+- [ ] 01-05-PLAN.md
+- [ ] 01-06-PLAN.md
+- [ ] 01-07-PLAN.md
 
 ### Phase 2: Letterboxd History Ingestion
+
 **Goal**: Given a Letterboxd username, the system returns the user's watch history (as complete as Letterboxd allows) or a clear, specific reason why it could not
 **Mode:** mvp
 **Depends on**: Phase 1
@@ -43,9 +53,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. An unknown user, a private profile, a blocked (Cloudflare/rate-limited) request, and a network failure each produce a distinct, readable error rather than an empty result or a generic "no history found"
   3. For a user with more watched films than one RSS page holds, the fetched history extends beyond that page where Letterboxd allows, and when only a partial history could be obtained the result says so
   4. All RSS and HTML scraping lives in a single Letterboxd module with no duplicated headers, constants, or fetch logic, and a single-request fetch returns without any fixed sleep
+
 **Plans**: TBD
 
 ### Phase 3: Recommendation Engine
+
 **Goal**: Given a watch history, users get unseen, correctly matched, well-ranked recommendations that honor genre and rating filters, each with a bounded explanation, computed with batched queries and covered by tests
 **Mode:** mvp
 **Depends on**: Phase 2
@@ -56,9 +68,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Applying a genre filter and/or a minimum IMDb rating still returns the requested number of picks, even for selective combinations
   4. The LLM write-up has an explanation for every returned pick, stays within a bounded length, and does not introduce films that are not in the ranked list
   5. A 500-film history is resolved and searched with a small, constant number of database round trips (not roughly two per film), and unit tests for title matching, score pooling/normalization, and Letterboxd parsing pass in CI
+
 **Plans**: TBD
 
 ### Phase 4: Web App
+
 **Goal**: A user can open the React app, enter a Letterboxd username, and see ranked picks with posters and explanations from a FastAPI backend, filter them, and understand what went wrong when a request fails
 **Mode:** mvp
 **Depends on**: Phase 3
@@ -68,10 +82,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User sees ranked picks as cards, each showing poster, title, year, genres, and the explanation; calling the API directly returns the same picks with title, year, poster URL, genres, score, and explanation
   3. User can filter by genre and minimum rating and gets an updated set of picks; the API accepts the same optional filters alongside the username
   4. When the username is unknown, Letterboxd blocks the request, or Ollama or Postgres is unavailable, the user sees a distinct, clear message in the app, backed by a structured error response from the API
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 5: Prefect Observability & Local Run
+
 **Goal**: Every recommend request is visible as a Prefect flow run with per-step timings, retries, and run metadata, and a developer can bring up the whole stack locally from one documented path
 **Mode:** mvp
 **Depends on**: Phase 4
@@ -81,6 +97,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Each flow run records its username, watched-film count, and resolved/unresolved counts, visible in the run's metadata
   3. A transient failure in the Letterboxd fetch or an Ollama call is retried automatically (retry attempts are visible in run history), and a persistent failure still reaches the user as the structured error from Phase 4
   4. Following one documented path from a fresh clone, a developer starts Postgres, Ollama, Prefect, the API, and the web app locally and gets recommendations end to end
+
 **Plans**: TBD
 
 ## Progress
@@ -90,7 +107,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Safe & Portable Foundation | 0/TBD | Not started | - |
+| 1. Safe & Portable Foundation | 0/7 | Planned     | - |
 | 2. Letterboxd History Ingestion | 0/TBD | Not started | - |
 | 3. Recommendation Engine | 0/TBD | Not started | - |
 | 4. Web App | 0/TBD | Not started | - |
