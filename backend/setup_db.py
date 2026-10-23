@@ -1,6 +1,6 @@
 """Step 1: enable pgvector and create the schema.
 
-Run from the repo root:  python -m backend.setup_db
+Run:  python -m backend.setup_db
 """
 
 import argparse
@@ -9,6 +9,7 @@ import sqlalchemy as sa
 from sqlalchemy import text
 
 from backend.config import EMBED_DIM, get_db_dsn
+from backend.console import use_utf8_console
 
 
 def create_schema(engine: sa.Engine) -> None:
@@ -35,7 +36,8 @@ def create_schema(engine: sa.Engine) -> None:
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__)
+    use_utf8_console()
+    ap =argparse.ArgumentParser(description=__doc__)
     ap.parse_args()
     dsn = get_db_dsn()
     engine = sa.create_engine(dsn)

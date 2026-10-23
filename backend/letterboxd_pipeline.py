@@ -5,12 +5,12 @@ Fetches a user's diary/ratings via their public RSS feed and exports
 a clean dataset as CSV and Excel.
 
 Usage:
-    python letterboxd_pipeline.py <username>
-    python letterboxd_pipeline.py dave --output my_movies
-    python letterboxd_pipeline.py dave --no-dupes   # keep only latest rating per film
+    python -m backend.letterboxd_pipeline <username>
+    python -m backend.letterboxd_pipeline dave --output my_movies
+    python -m backend.letterboxd_pipeline dave --no-dupes   # keep only latest rating per film
 
 Dependencies:
-    pip install requests beautifulsoup4 pandas openpyxl lxml
+    pip install -r requirements.txt
 """
 
 import sys
@@ -23,6 +23,8 @@ from pathlib import Path
 from datetime import datetime
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+
+from backend.console import use_utf8_console
 
 BASE_URL = "https://letterboxd.com"
 HEADERS  = {
@@ -232,7 +234,8 @@ def export_dataset(df: pd.DataFrame, username: str, stem: str | None = None):
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(
+    use_utf8_console()
+    parser =argparse.ArgumentParser(
         description="Build a dataset of a Letterboxd user's watched films via RSS."
     )
     parser.add_argument("username", nargs="?")
@@ -247,7 +250,7 @@ def main():
     username = args.username or args.username_flag
     if not username:
         parser.print_help()
-        print("\n  Example: python letterboxd_pipeline.py dave\n")
+        print("\n  Example: python -m backend.letterboxd_pipeline dave\n")
         sys.exit(1)
 
     df = run_pipeline(

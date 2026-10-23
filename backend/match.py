@@ -4,7 +4,7 @@ For each watched film we find its nearest neighbours in pgvector, then pool the
 neighbours across all watched films, weighting by how much the user liked each
 seed film. Anything already logged on Letterboxd is excluded.
 
-Run from the repo root and answer the prompts:
+Run and answer the prompts:
     python -m backend.match
 
 or pass everything as flags:
@@ -26,6 +26,7 @@ import sqlalchemy as sa
 from sqlalchemy import text
 
 from backend.config import get_chat_model, get_db_dsn
+from backend.console import use_utf8_console
 from backend.letterboxd_import import load_export
 from backend.letterboxd_pipeline import BASE_URL, HEADERS, run_pipeline
 from backend.utils import ollama_embed_batch, vec_literal
@@ -134,7 +135,8 @@ def resolve(conn, title: str, year):
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    use_utf8_console()
+    ap =argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("username", nargs="?", help="Letterboxd username (prompted if omitted)")
     ap.add_argument("--genre", help="Only recommend films in this genre (prompted if omitted)")
     ap.add_argument("--min-rating", type=float, help="Minimum IMDb rating, 0-10 (prompted if omitted)")

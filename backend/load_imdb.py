@@ -1,6 +1,6 @@
 """Step 2: parse the IMDb TSVs, keep feature films, load into Postgres.
 
-Run from the repo root:  python -m backend.load_imdb [--min-votes 500]
+Run:  python -m backend.load_imdb [--min-votes 500]
 Expects title.basics.tsv.gz and title.ratings.tsv.gz in <repo root>/imdb_data/ unless IMDB_DIR
 overrides it.
 """
@@ -12,6 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy import text
 
 from backend.config import get_db_dsn, get_imdb_dir
+from backend.console import use_utf8_console
 
 
 def make_blob(row) -> str:
@@ -28,7 +29,8 @@ def make_blob(row) -> str:
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__)
+    use_utf8_console()
+    ap =argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--min-votes", type=int, default=500,
                     help="Drop films with fewer IMDb votes (default 500; 0 keeps everything). "
                          "Cuts embedding time dramatically and removes obscure noise.")
