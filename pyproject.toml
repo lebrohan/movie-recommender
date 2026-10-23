@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "movie-recommender"
+version = "0.1.0"
+description = "Personal movie recommender: Letterboxd history, pgvector search over IMDb, local LLM explanations"
+requires-python = ">=3.12"
+# No `dependencies` list on purpose: exact pins live in requirements.txt.
+
+[tool.setuptools]
+# Only the backend package is installed (editable); tests/ and other root folders are not packaged.
+packages = ["backend"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
