@@ -25,7 +25,7 @@ import requests
 import sqlalchemy as sa
 from sqlalchemy import text
 
-from backend.config import CHAT_MODEL, DB_DSN
+from backend.config import get_chat_model, get_db_dsn
 from backend.letterboxd_import import load_export
 from backend.letterboxd_pipeline import BASE_URL, HEADERS, run_pipeline
 from backend.utils import ollama_embed_batch, vec_literal
@@ -145,6 +145,8 @@ def main():
     ap.add_argument("--out", default="recommendations.csv")
     args = ap.parse_args()
 
+    dsn = get_db_dsn()   # fail before prompts or any network fetch if the database is unconfigured
+
     interactive = sys.stdin.isatty()
     username = (args.username or (ask_username() if interactive else "")).strip().lower()
     if not username:
@@ -156,7 +158,7 @@ def main():
     if hist.empty:
         sys.exit("No Letterboxd history found — check the username and that the profile is public.")
 
-    engine = sa.create_engine(DB_DSN)
+    engine = sa.create_engine(dsn)
     scores: dict[str, float] = defaultdict(float)
     because: dict[str, list[tuple[float, str]]] = defaultdict(list)
     meta: dict[str, dict] = {}
@@ -256,7 +258,7 @@ def main():
             + "\n".join(blocks)
         )
         print("\nAsking Llama for a write-up…\n")
-        resp = ollama.chat(model=CHAT_MODEL, messages=[{"role": "user", "content": prompt}],
+        resp = ollama.chat(model=get_chat_model(), messages=[{"role": "user", "content": prompt}],
                            options={"temperature": 0.3})
         print(resp["message"]["content"])
 

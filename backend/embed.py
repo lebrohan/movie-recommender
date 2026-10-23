@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy import text
 from tqdm import tqdm
 
-from backend.config import DB_DSN, EMBED_MODEL
+from backend.config import get_db_dsn, get_embed_model
 from backend.utils import ollama_embed_batch, vec_literal
 
 
@@ -21,12 +21,13 @@ def main():
     ap.add_argument("--no-index", action="store_true", help="Skip building the vector index at the end")
     args = ap.parse_args()
 
-    engine = sa.create_engine(DB_DSN)
+    dsn = get_db_dsn()
+    engine = sa.create_engine(dsn)
     with engine.connect() as conn:
         rows = conn.execute(text(
             "SELECT tconst, text_blob FROM movies WHERE embedding IS NULL ORDER BY vote_count DESC NULLS LAST"
         )).fetchall()
-    print(f"Embedding {len(rows):,} movies with {EMBED_MODEL}…")
+    print(f"Embedding {len(rows):,} movies with {get_embed_model()}…")
 
     for i in tqdm(range(0, len(rows), args.batch_size)):
         batch = rows[i : i + args.batch_size]

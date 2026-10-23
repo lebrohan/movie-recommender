@@ -1,7 +1,8 @@
 """Step 2: parse the IMDb TSVs, keep feature films, load into Postgres.
 
 Run from the repo root:  python -m backend.load_imdb [--min-votes 500]
-Expects title.basics.tsv.gz and title.ratings.tsv.gz in ./imdb_data/ (see IMDB_DIR).
+Expects title.basics.tsv.gz and title.ratings.tsv.gz in <repo root>/imdb_data/ unless IMDB_DIR
+overrides it.
 """
 
 import argparse
@@ -10,7 +11,7 @@ import pandas as pd
 import sqlalchemy as sa
 from sqlalchemy import text
 
-from backend.config import DB_DSN, IMDB_DIR
+from backend.config import get_db_dsn, get_imdb_dir
 
 
 def make_blob(row) -> str:
@@ -33,16 +34,19 @@ def main():
                          "Cuts embedding time dramatically and removes obscure noise.")
     args = ap.parse_args()
 
+    dsn = get_db_dsn()
+    imdb_dir = get_imdb_dir()
+
     print("Loading title.basics…")
     basics = pd.read_csv(
-        IMDB_DIR / "title.basics.tsv.gz", sep="\t", na_values="\\N", quoting = csv.QUOTE_NONE, low_memory=False,
+        imdb_dir / "title.basics.tsv.gz", sep="\t", na_values="\\N", quoting = csv.QUOTE_NONE, low_memory=False,
         usecols=["tconst", "titleType", "primaryTitle", "startYear", "genres"],
     )
     basics = basics[basics["titleType"].isin(["movie", "tvMovie"])].dropna(subset=["primaryTitle"])
     basics["startYear"] = pd.to_numeric(basics["startYear"], errors="coerce")
 
     print("Loading title.ratings…")
-    ratings = pd.read_csv(IMDB_DIR / "title.ratings.tsv.gz", sep="\t", na_values="\\N")
+    ratings = pd.read_csv(imdb_dir / "title.ratings.tsv.gz", sep="\t", na_values="\\N")
 
     df = basics.merge(ratings, on="tconst", how="left").rename(columns={
         "primaryTitle": "title", "startYear": "year",
@@ -58,7 +62,7 @@ def main():
     df = df[["tconst", "title", "year", "genres", "imdb_rating", "vote_count", "text_blob"]]
 
     # Bulk-load into a staging table, then upsert so re-runs are safe and keep embeddings.
-    engine = sa.create_engine(DB_DSN)
+    engine = sa.create_engine(dsn)
     print(f"Inserting {len(df):,} rows…")
     df.to_sql("movies_staging", engine, if_exists="replace", index=False,
               chunksize=10_000, method="multi")

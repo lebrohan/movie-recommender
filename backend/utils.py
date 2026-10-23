@@ -1,11 +1,11 @@
 import ollama
 
-from backend.config import EMBED_MODEL
+from backend.config import get_embed_model
 
 
-def ollama_embed_batch(texts: list[str], model: str = EMBED_MODEL) -> list[list[float]]:
-    """Embed a list of strings in one Ollama call."""
-    return ollama.embed(model=model, input=texts)["embeddings"]
+def ollama_embed_batch(texts: list[str], model: str | None = None) -> list[list[float]]:
+    """Embed a list of strings in one Ollama call (model resolved at call time)."""
+    return ollama.embed(model=model or get_embed_model(), input=texts)["embeddings"]
 
 
 def vec_literal(embedding: list[float]) -> str:
