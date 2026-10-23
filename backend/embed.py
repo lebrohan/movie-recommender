@@ -1,6 +1,6 @@
 """Step 3: embed every movie that has no embedding yet (safe to interrupt and re-run).
 
-Run from the repo root:  python -m backend.embed [--batch-size 64]
+Run:  python -m backend.embed [--batch-size 64]
 """
 
 import argparse
@@ -11,11 +11,13 @@ from sqlalchemy import text
 from tqdm import tqdm
 
 from backend.config import get_db_dsn, get_embed_model
+from backend.console import use_utf8_console
 from backend.utils import ollama_embed_batch, vec_literal
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__)
+    use_utf8_console()
+    ap =argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--batch-size", type=int, default=64,
                     help="Movies per Ollama call (higher = faster, more RAM)")
     ap.add_argument("--no-index", action="store_true", help="Skip building the vector index at the end")

@@ -11,6 +11,8 @@ import zipfile
 
 import pandas as pd
 
+from backend.console import use_utf8_console
+
 
 def read(z: zipfile.ZipFile, name: str) -> pd.DataFrame | None:
     return pd.read_csv(z.open(name)) if name in z.namelist() else None
@@ -44,7 +46,8 @@ def load_export(zip_path: str) -> pd.DataFrame:
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__)
+    use_utf8_console()
+    ap =argparse.ArgumentParser(description=__doc__)
     ap.add_argument("zip_path")
     ap.add_argument("-o", "--output", default="letterboxd_export.csv")
     args = ap.parse_args()
