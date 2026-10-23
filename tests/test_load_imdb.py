@@ -165,3 +165,30 @@ def test_db_engine_refuses_production_db(monkeypatch):
     with pytest.raises(pytest.fail.Exception):
         _assert_disposable("postgresql+psycopg2://u:p@localhost/some_real_db")
     _assert_disposable("postgresql+psycopg2://u:p@localhost/movies_test")  # does not raise
+
+
+@pytest.mark.skipif(
+    os.environ.get("RUN_FULL_IMDB_GATE") != "1",
+    reason="opt-in D-13 gate: set RUN_FULL_IMDB_GATE=1 (needs the IMDb TSVs)",
+)
+def test_full_dataset_byte_identity():
+    imdb = get_imdb_dir()
+    if not (imdb / "title.basics.tsv.gz").exists() or not (imdb / "title.ratings.tsv.gz").exists():
+        pytest.skip("IMDb TSVs not found under get_imdb_dir()")
+
+    start = time.perf_counter()
+    old = _old_read(imdb)
+    old_blobs = old.apply(make_blob, axis=1)
+    new = read_imdb(imdb, min_votes=0)
+    new_blobs = new["text_blob"]
+
+    n = min(len(old), len(new))
+    diff = (old["tconst"].iloc[:n].reset_index(drop=True) != new["tconst"].iloc[:n].reset_index(drop=True)) | (
+        old_blobs.iloc[:n].reset_index(drop=True) != new_blobs.iloc[:n].reset_index(drop=True))
+    mismatches = int(diff.sum())
+    print(f"OLD_ROWS={len(old)} NEW_ROWS={len(new)} MISMATCHES={mismatches} "
+          f"SECONDS={time.perf_counter() - start:.1f}")
+    if mismatches:
+        print("first differing tconsts:", old["tconst"].iloc[:n].reset_index(drop=True)[diff].head(5).tolist())
+    assert len(old) == len(new)
+    assert mismatches == 0
