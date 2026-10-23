@@ -1,6 +1,5 @@
-import sys
+"""Movie recommender backend.
 
-# Windows consoles often default to cp1252, which can't print the ✓/★/— used in our output.
-for _stream in (sys.stdout, sys.stderr):
-    if hasattr(_stream, "reconfigure"):
-        _stream.reconfigure(encoding="utf-8", errors="replace")
+Importing this package has no side effects: it does not touch sys.stdout, sys.stderr or
+os.environ. Entry points call backend.console.use_utf8_console() from main() instead.
+"""
