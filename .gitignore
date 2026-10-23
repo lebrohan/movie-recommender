@@ -650,3 +650,16 @@ __marimo__/
 .streamlit/secrets.toml
 
 imdb_data/
+
+# --- Movie Recommender project rules ---
+# `*.env` higher up does not match a bare `.env`. Personal Letterboxd exports must never be committed.
+.env
+!.env.example
+.venv/
+.pytest_cache/
+__pycache__/
+imdb_data/
+graphify-out/
+recommendations.csv
+*_letterboxd_*.csv
+*_letterboxd_*.xlsx
