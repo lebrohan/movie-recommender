@@ -3,14 +3,15 @@
 Run from the repo root:  python -m backend.setup_db
 """
 
+import argparse
+
 import sqlalchemy as sa
 from sqlalchemy import text
 
-from backend.config import DB_DSN, EMBED_DIM
+from backend.config import EMBED_DIM, get_db_dsn
 
 
-def main():
-    engine = sa.create_engine(DB_DSN)
+def create_schema(engine: sa.Engine) -> None:
     with engine.begin() as conn:
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
         conn.execute(text(f"""
@@ -31,6 +32,14 @@ def main():
         ))
         # The vector index is built by embed.py *after* embedding: an ANN index
         # created on an empty table is useless (ivfflat) or slow to maintain (hnsw).
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.parse_args()
+    dsn = get_db_dsn()
+    engine = sa.create_engine(dsn)
+    create_schema(engine)
     print("✓ Schema ready.")
 
 
