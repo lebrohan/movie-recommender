@@ -122,7 +122,13 @@ def upsert_movies(engine: sa.Engine, df: pd.DataFrame) -> int:
                 -- if the blob changed, drop the stale embedding so embed.py redoes it
                 embedding = CASE WHEN movies.text_blob IS DISTINCT FROM EXCLUDED.text_blob
                                  THEN NULL ELSE movies.embedding END,
-                text_blob = EXCLUDED.text_blob;
+                text_blob = EXCLUDED.text_blob
+            -- skip rows that did not change: every rewritten row costs an HNSW index insert
+            WHERE (movies.title, movies.year, movies.genres, movies.imdb_rating,
+                   movies.vote_count, movies.text_blob)
+                  IS DISTINCT FROM
+                  (EXCLUDED.title, EXCLUDED.year, EXCLUDED.genres, EXCLUDED.imdb_rating,
+                   EXCLUDED.vote_count, EXCLUDED.text_blob);
         """))
         conn.execute(text("DROP TABLE movies_staging;"))
     return len(df)

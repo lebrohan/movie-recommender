@@ -155,6 +155,33 @@ def test_upsert_roundtrip_and_skip_unchanged(db_engine, imdb_dir: Path):
     assert has_embedding == {"tt0000001": False, "tt0000005": True, "tt0000006": True}
 
 
+def test_upsert_does_not_rewrite_unchanged_rows(db_engine, imdb_dir: Path):
+    """Re-loading identical data must not create new row versions (each one costs an HNSW insert)."""
+    import sqlalchemy as sa
+
+    create_schema(db_engine)
+    df = read_imdb(imdb_dir, min_votes=0)
+    df = df[df["tconst"].isin(["tt0000001", "tt0000005", "tt0000006"])].reset_index(drop=True)
+    upsert_movies(db_engine, df)
+
+    def xmins() -> dict:
+        with db_engine.connect() as conn:
+            return dict(conn.execute(sa.text("SELECT tconst, xmin::text FROM movies")).all())
+
+    before = xmins()
+    upsert_movies(db_engine, df)
+    assert xmins() == before
+
+    changed = df.copy()
+    changed.loc[changed["tconst"] == "tt0000001", "imdb_rating"] = 9.4
+    changed["text_blob"] = build_text_blobs(changed)
+    upsert_movies(db_engine, changed)
+    after = xmins()
+    assert after["tt0000001"] != before["tt0000001"]
+    assert after["tt0000005"] == before["tt0000005"]
+    assert after["tt0000006"] == before["tt0000006"]
+
+
 def test_db_engine_refuses_production_db(monkeypatch):
     from conftest import _assert_disposable
 
